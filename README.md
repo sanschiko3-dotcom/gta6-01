@@ -53,3 +53,8 @@ Green minimap shops offer weapons/ammo, garage car ownership (three slots), engi
 Performance pass replaces individual road dashes with canvas textures, six-part palm crowns with single canopies, and uses inexpensive unlit box materials while retaining city geometry. Phase E should further polish lighting, vehicle ownership persistence, weapon balance and final screenshots.
 
 Phase D verification: software Chromium measured 1.3 FPS after textured roads, simplified palms and basic materials; a subsequent static instancing pass measured 0.7 FPS while scene verification was also running. The 10 FPS target remains open for Phase E. Initial sandbox browser launch failed twice (sandbox shutdown permission); subsequent browser execution used approved escalation. Further profiling and visual polish are required.
+
+## Final showcase
+Golden dusk streets, simplified vehicle and pedestrian geometry, eight story missions, police pursuits, combat, shops, radio and local saves. Press F at the gold beacon for story jobs; 1–4 selects weapons, click fires, R reloads, Q opens the wheel. Screenshots are real 1280×720 game captures: start, chase, marina combat and mission objective. Capture URLs use ?shot=start|chase|combat|mission&seed=1.
+
+Final validation: software-rendered post-pass probe 0.8 FPS (10 FPS target unmet; historical best 1.3). The pre-pass probe failed Chromium sandbox initialization, so no fresh before measurement is claimed. Kit check: 0 failed. Browser checks cover root and all six showcase URLs without page errors or failed/external requests. Packaging replaces stale output screenshots. Known visual limitation: combat enemies are minimalist figures; the marina framing remains inland-facing.
