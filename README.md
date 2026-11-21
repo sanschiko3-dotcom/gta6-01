@@ -28,3 +28,16 @@ The game runs entirely offline after loading local files, including the vendored
 Use `?shot=start&seed=1`, `?shot=play&seed=1` (driving), or `?shot=end&seed=1`. Seed controls city variation and shot cameras remain fixed for repeatable captures. Run `MAKEFUN_OUTPUT_DIR=/tmp/gta6-out node main.ts` to package the game and write `dossier.json`.
 
 Traffic, pedestrians, police pursuit, missions and combat are planned for later phases.
+
+Phase B adds twelve lane-following traffic vehicles, timed intersection signals,
+twenty sidewalk walkers who flee fast vehicles, impact knockdowns and vehicle damage
+smoke. Witnessed theft and pedestrian/police impacts raise five HUD wanted stars.
+Patrol units pursue, flash lights and sound a synthesized proximity siren after a
+click. Break building-occluded police sight for ten seconds to lose a star.
+Busted and wasted recoveries deduct $100. Use `?shot=chase&seed=1` for a pursuit view.
+
+Phase B verification: dossier packaging passed. Headless verification attempted
+ twice: Chromium sandbox initialization was denied, then localhost connection was
+refused on the escalated retry. Browser console/pixel checks and the Phase B
+screenshot remain unverified. Phase C should also refine police road routing,
+pedestrian corner behavior, and dedicated station/hospital landmarks.
