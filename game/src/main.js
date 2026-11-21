@@ -1,134 +1,15 @@
-// Boot and the one loop: input is read every frame, the world advances in fixed 1/60 s steps
-// (several in a slow frame, none in a fast one), and the renderer paints what is there. The game
-// moves between four screens: title, play, paused and game over.
-//
-// ?seed=N fixes the falling pattern. ?shot=start|play|end (with &seed=N) stages that scene
-// instead of running the loop, paints it twice and sets window.__shotReady for a screenshot.
-import { BEST_KEY, LIVES, STEP } from './config.js';
-import { createRandom } from './random.js';
-import { createWorld, EVENT_HIT, EVENT_OVER } from './world.js';
-import { ACTION_CONFIRM, ACTION_PAUSE, createInput } from './input.js';
-import { createRenderer, SCREEN_OVER, SCREEN_PAUSED, SCREEN_PLAY, SCREEN_TITLE } from './render.js';
 import { stageShot } from './shots.js';
-
-/** The longest frame the loop catches up on; a longer stall (a hidden tab) is dropped, not replayed. */
-const MAX_FRAME = 0.25;
-
-const params = new URLSearchParams(window.location.search);
-const shot = params.get('shot');
-const seedParam = Number.parseInt(params.get('seed') ?? '', 10);
-const seed = Number.isInteger(seedParam) ? seedParam : Math.floor(Math.random() * 4294967296);
-
-const canvas = document.getElementById('game');
-const status = document.getElementById('status');
-const world = createWorld(createRandom(seed));
-const renderer = createRenderer(canvas);
-
-function readBest() {
-  try {
-    return Number.parseInt(window.localStorage.getItem(BEST_KEY) ?? '0', 10) || 0;
-  } catch {
-    return 0;
-  }
-}
-
-function saveBest(value) {
-  try {
-    window.localStorage.setItem(BEST_KEY, String(value));
-  } catch {
-    // Storage can be off (private windows): the best score then lasts this visit only.
-  }
-}
-
-function runShot(name) {
-  const scene = stageShot(name, world);
-  let painted = 0;
-  function paint() {
-    renderer.draw(world.state, scene.screen, scene.best);
-    painted += 1;
-    if (painted < 2) requestAnimationFrame(paint);
-    else window.__shotReady = true;
-  }
-  requestAnimationFrame(paint);
-}
-
-function runGame() {
-  const input = createInput(canvas);
-  let screen = SCREEN_TITLE;
-  let best = readBest();
-  let accumulator = 0;
-  let last = performance.now();
-
-  // Screen readers (and anyone watching the page's text) hear the screen changes and each hit.
-  function announce(message) {
-    status.textContent = message;
-  }
-
-  function startGame() {
-    world.reset();
-    accumulator = 0;
-    screen = SCREEN_PLAY;
-    announce(`Playing. ${LIVES} lives.`);
-  }
-
-  function endGame() {
-    screen = SCREEN_OVER;
-    if (world.state.score > best) {
-      best = world.state.score;
-      saveBest(best);
-    }
-    announce(`Game over. Score ${world.state.score}. Best ${best}.`);
-  }
-
-  function handleActions() {
-    const actions = input.takeActions();
-    if (actions & ACTION_CONFIRM && (screen === SCREEN_TITLE || screen === SCREEN_OVER)) startGame();
-    else if (actions & ACTION_PAUSE && screen === SCREEN_PLAY) {
-      screen = SCREEN_PAUSED;
-      announce('Paused.');
-    } else if (actions & (ACTION_PAUSE | ACTION_CONFIRM) && screen === SCREEN_PAUSED) {
-      screen = SCREEN_PLAY;
-      announce('Playing.');
-    }
-  }
-
-  function step() {
-    if (screen === SCREEN_TITLE) {
-      world.step(STEP, 0, true);
-      return;
-    }
-    const events = world.step(STEP, input.direction(), false);
-    if (events & EVENT_OVER) endGame();
-    else if (events & EVENT_HIT) announce(world.state.lives === 1 ? 'Hit. 1 life left.' : `Hit. ${world.state.lives} lives left.`);
-  }
-
-  function frame(now) {
-    requestAnimationFrame(frame);
-    accumulator += Math.min((now - last) / 1000, MAX_FRAME);
-    last = now;
-    handleActions();
-    if (screen === SCREEN_TITLE || screen === SCREEN_PLAY) {
-      while (accumulator >= STEP && (screen === SCREEN_TITLE || screen === SCREEN_PLAY)) {
-        step();
-        accumulator -= STEP;
-      }
-    } else {
-      accumulator = 0;
-    }
-    renderer.draw(world.state, screen, best);
-  }
-
-  // Leaving the tab pauses a running game rather than letting blocks fall unseen.
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden && screen === SCREEN_PLAY) {
-      screen = SCREEN_PAUSED;
-      announce('Paused.');
-    }
-  });
-
-  announce('Block Dodger. Press Space or click to start.');
-  requestAnimationFrame(frame);
-}
-
-if (shot) runShot(shot);
-else runGame();
+import * as T from '../vendor/three.module.min.js';
+const params=new URLSearchParams(location.search);let seed=Number(params.get('seed')||1);const rand=()=>{seed=(1664525*seed+1013904223)>>>0;return seed/4294967296};
+const scene=new T.Scene();scene.background=new T.Color('#eaa18b');scene.fog=new T.Fog('#eaa18b',100,420);const camera=new T.PerspectiveCamera(60,innerWidth/innerHeight,.1,700);const renderer=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});renderer.setSize(innerWidth,innerHeight);renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.toneMapping=T.ACESFilmicToneMapping;document.body.prepend(renderer.domElement);scene.add(new T.HemisphereLight('#ffe2bd','#526977',2));const sun=new T.DirectionalLight('#ffbb79',3);sun.position.set(-100,140,-80);scene.add(sun);
+const box=(x,y,z,w,h,d,color,parent=scene)=>{const m=new T.Mesh(new T.BoxGeometry(w,h,d),new T.MeshStandardMaterial({color,roughness:.75}));m.position.set(x,y,z);parent.add(m);return m};
+box(0,-.4,0,410,.5,410,'#b2a68e');box(255,-.55,0,100,.4,450,'#e5c497');box(450,-.8,0,290,.4,800,'#348a99');box(315,0,55,100,.5,9,'#896d56');for(let i=0;i<12;i++)box(275+i*7,-1,55,1,3,8,'#695b4e');
+for(let a=-180;a<=180;a+=60){box(a,0,0,15,.1,410,'#39454d');box(0,.01,a,410,.1,15,'#39454d');for(let b=-195;b<205;b+=12){box(a,.08,b,.22,.02,5,'#f4d896');box(b,.09,a,5,.02,.22,'#f4d896')}}
+const colliders=[];for(let x=-150;x<200;x+=60)for(let z=-150;z<190;z+=60){const h=8+rand()*((x<0)?60:18),w=24+rand()*10,d=26+rand()*8;box(x,.2,z,46,.3,46,'#c7b7a0');const c=document.createElement('canvas');c.width=64;c.height=128;const ctx=c.getContext('2d');ctx.fillStyle=['#b7b9ad','#c5a28d','#8dabae'][Math.floor(rand()*3)];ctx.fillRect(0,0,64,128);for(let i=4;i<64;i+=12)for(let j=4;j<128;j+=12){ctx.fillStyle=rand()>.45?'#f5d092':'#506472';ctx.fillRect(i,j,6,7)}const tex=new T.CanvasTexture(c);const m=box(x,h/2,z,w,h,d,'white');m.material.map=tex;box(x,h+.4,z,w+1,.8,d+1,'#e5d6be');colliders.push({x,z,w:w/2,d:d/2});}
+for(let z=-190;z<205;z+=18){const x=208;box(x,4,z,.6,8,.6,'#927b55');for(let j=0;j<6;j++){const leaf=box(x,8,z,7,.22,1.5,'#3c795a');leaf.rotation.y=j*Math.PI/3;leaf.rotation.z=.25}box(10,3,z,.2,6,.2,'#46515a');box(11,6,z,2,.2,.5,'#ffe4a4');}
+for(let x=-180;x<190;x+=60)for(let z=-180;z<190;z+=60){box(x+9,2.5,z+9,.2,5,.2,'#444');box(x+9,4.7,z+9,.6,1.5,.6,'#222');box(x+9,4.9,z+9.32,.25,.25,.1,'#70edab')}
+const cars=[];for(let i=0;i<24;i++){const type=i%4,g=new T.Group();scene.add(g);g.position.set(i<4?5:((i%6)*60-180)+5,i<0?1:0,i<4?i*10-10:Math.floor(i/6)*60-155);const colors=['#e9b745','#e56d60','#526b93','#4ad1c0'];box(0,.7,0,2.1,.65,4.2,colors[type],g);box(0,1.25,-.2,1.8,type===2?1.1:.7,type===3?1.5:2,'#294553',g);for(const x of [-1.06,1.06])for(const z of [-1.35,1.35])box(x,.4,z,.35,.7,.7,'#20252b',g);for(const x of [-.7,.7]){box(x,.75,2.12,.5,.22,.06,'#fff0c1',g);box(x,.75,-2.12,.5,.22,.06,'#eb4e46',g)}g.userData={speed:0,type};cars.push(g)}
+const player=new T.Group();scene.add(player);player.position.set(1,0,0);box(0,1.2,0,.65,.8,.4,'#ef794f',player);box(0,1.85,0,.42,.45,.42,'#be8c69',player);for(const x of [-.2,.2])box(x,.45,0,.23,.8,.25,'#263e51',player);for(const x of [-.46,.46])box(x,1.15,0,.2,.8,.22,'#be8c69',player);
+let active=null,paused=true,yaw=.5,pitch=.35;const keys={};const menu=document.querySelector('#menu');menu.onclick=()=>{paused=false;menu.style.display='none'};onkeydown=e=>{keys[e.code]=true;if(e.code==='Escape'){paused=!paused;menu.querySelector('h2').textContent='PAUSED · CLICK TO RESUME →';menu.style.display=paused?'flex':'none'}if(e.code==='KeyE'&&!e.repeat&&!paused){if(active){player.position.copy(active.position).add(new T.Vector3(3,0,0));active=null;player.visible=true}else{active=cars.find(c=>c.position.distanceTo(player.position)<6)||null;player.visible=!active}}};onkeyup=e=>keys[e.code]=false;onblur=()=>{for(const key of Object.keys(keys))keys[key]=false};onmousemove=e=>{if(!paused){yaw-=e.movementX*.003;pitch=T.MathUtils.clamp(pitch+e.movementY*.002,.1,1)}};
+const blocked=(x,z,r)=>Math.abs(x)>235||Math.abs(z)>210||colliders.some(b=>Math.abs(x-b.x)<b.w+r&&Math.abs(z-b.z)<b.d+r);let last=performance.now();function frame(now){requestAnimationFrame(frame);const dt=Math.min((now-last)/1000,.04);last=now;const target=active||player;if(!paused){let dx=0,dz=0;if(active){let s=active.userData.speed;s+=((keys.KeyW?20:0)-(keys.KeyS?24:0)-s*(keys.Space?5:.6))*dt;s=T.MathUtils.clamp(s,-12,45);active.userData.speed=s;active.rotation.y+=((keys.KeyA?1:0)-(keys.KeyD?1:0))*dt*s*.045;dx=Math.sin(active.rotation.y)*s*dt;dz=Math.cos(active.rotation.y)*s*dt}else{const f=(keys.KeyW?1:0)-(keys.KeyS?1:0),r=(keys.KeyD?1:0)-(keys.KeyA?1:0),speed=keys.ShiftLeft?10:5;dx=(-Math.sin(yaw)*f+Math.cos(yaw)*r)*speed*dt;dz=(-Math.cos(yaw)*f-Math.sin(yaw)*r)*speed*dt;if(dx||dz)player.rotation.y=Math.atan2(dx,dz)}if(!blocked(target.position.x+dx,target.position.z+dz,active?2:.5)){target.position.x+=dx;target.position.z+=dz}else if(active)active.userData.speed*= -.2;}
+const a=active?active.rotation.y+Math.PI:yaw;const desired=new T.Vector3(target.position.x+Math.sin(a)*(active?10:7),target.position.y+3+pitch*7,target.position.z+Math.cos(a)*(active?10:7));if(!params.has('shot'))camera.position.lerp(desired,1-Math.exp(-dt*8));camera.lookAt(target.position.x,1.5,target.position.z);document.querySelector('#speed').textContent=active?Math.round(Math.abs(active.userData.speed)*3.6)+' KM/H':'';document.querySelector('#district').textContent=target.position.x>170?'BEACHFRONT':target.position.z>80?'PORT':target.position.z< -80?'MARINA':target.position.x< -60?'DOWNTOWN':'OLD TOWN';renderer.render(scene,camera)}const shot=stageShot(params.get('shot'),{player,cars,menu,camera});paused=shot.paused;active=shot.active;player.visible=!active;yaw=shot.yaw;requestAnimationFrame(frame);onresize=()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)};
