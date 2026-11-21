@@ -44,3 +44,12 @@ pedestrian corner behavior, and dedicated station/hospital landmarks.
 
 ## Phase C
 Eight chained crew jobs begin at the gold safehouse beacon with F. Deliver cars and packages, evade police, race checkpoints, ram attackers and escape a bank vault. Esc opens saves and completed mission replays. Three local save slots retain cash, respect, position and palm coins; mission rewards autosave. Radio stations SOL FM, NEON WAVE and PALMA use local WebAudio synthesis; switch with [ and ] after clicking. The north-up minimap tracks traffic, patrols and objectives. Collect 20 gold rings ($25 each), or follow the green taxi beacon for $150 fares.
+
+## Phase D
+Combat uses 1–4 to select fists, pistol, SMG or shotgun; hold Q for the weapon selector, click to fire, R to reload. Mission attackers fire with line of sight. Defeated attackers drop ammunition; health regenerates outside combat. Four-star pursuits bring a rotor helicopter and tracking searchlight; three stars deploy roadblocks.
+
+Green minimap shops offer weapons/ammo, garage car ownership (three slots), engine and armor upgrades, and a $50 clinic. Press E on foot. Engine, skid, gunfire, UI and mission jingles are synthesized after interaction.
+
+Performance pass replaces individual road dashes with canvas textures, six-part palm crowns with single canopies, and uses inexpensive unlit box materials while retaining city geometry. Phase E should further polish lighting, vehicle ownership persistence, weapon balance and final screenshots.
+
+Phase D verification: software Chromium measured 1.3 FPS after textured roads, simplified palms and basic materials; a subsequent static instancing pass measured 0.7 FPS while scene verification was also running. The 10 FPS target remains open for Phase E. Initial sandbox browser launch failed twice (sandbox shutdown permission); subsequent browser execution used approved escalation. Further profiling and visual polish are required.
