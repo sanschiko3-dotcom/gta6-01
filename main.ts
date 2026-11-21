@@ -10,7 +10,7 @@ const out = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
 if (!existsSync(join(here, 'game', 'index.html'))) throw new Error('Missing playable game/index.html');
 // Reject empty output paths before copying the playable build.
 if (!out.trim()) throw new Error('Output directory must not be empty');
-for (const module of ['missions', 'hud', 'radio', 'save', 'combat', 'sound']) {
+for (const module of ['shots', 'missions', 'hud', 'radio', 'save', 'combat', 'sound']) {
   if (!existsSync(join(here, 'game', 'src', module + '.js'))) throw new Error('Missing gameplay module: ' + module);
 }
 for (const name of ['1-start.jpg','2-chase.jpg','3-combat.jpg','4-mission.jpg']) {

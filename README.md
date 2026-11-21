@@ -58,3 +58,7 @@ Phase D verification: software Chromium measured 1.3 FPS after textured roads, s
 Golden dusk streets, simplified vehicle and pedestrian geometry, eight story missions, police pursuits, combat, shops, radio and local saves. Press F at the gold beacon for story jobs; 1–4 selects weapons, click fires, R reloads, Q opens the wheel. Screenshots are real 1280×720 game captures: start, chase, marina combat and mission objective. Capture URLs use ?shot=start|chase|combat|mission&seed=1.
 
 Final validation: software-rendered post-pass probe 0.8 FPS (10 FPS target unmet; historical best 1.3). The pre-pass probe failed Chromium sandbox initialization, so no fresh before measurement is claimed. Kit check: 0 failed. Browser checks cover root and all six showcase URLs without page errors or failed/external requests. Packaging replaces stale output screenshots. Known visual limitation: combat enemies are minimalist figures; the marina framing remains inland-facing.
+
+Showcase fix-up: chase and race cameras sit along the road center; marina combat looks toward the coast. Race elapsed time is clamped to zero.
+
+Fix-up capture verification stopped after two failures: sandbox Chromium shutdown permission, then unsandboxed localhost connection refused. The three existing captures remain pending replacement; browser console verification is unconfirmed.
