@@ -10,6 +10,9 @@ const out = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
 if (!existsSync(join(here, 'game', 'index.html'))) throw new Error('Missing playable game/index.html');
 // Reject empty output paths before copying the playable build.
 if (!out.trim()) throw new Error('Output directory must not be empty');
+for (const module of ['missions', 'hud', 'radio', 'save']) {
+  if (!existsSync(join(here, 'game', 'src', module + '.js'))) throw new Error('Missing Phase C module: ' + module);
+}
 mkdirSync(out, { recursive: true });
 cpSync(join(here, 'game'), join(out, 'game'), { recursive: true });
 mkdirSync(join(out, 'screenshots'), { recursive: true });

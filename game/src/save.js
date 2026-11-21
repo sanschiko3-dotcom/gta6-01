@@ -1,0 +1,1 @@
+export const saves={read(i=0){try{return JSON.parse(localStorage.getItem('solara-'+i))}catch{return null}},write(i,data){try{localStorage.setItem('solara-'+i,JSON.stringify({...data,date:Date.now()}));return true}catch{return false}}};

@@ -41,3 +41,6 @@ Phase B verification: dossier packaging passed. Headless verification attempted
 refused on the escalated retry. Browser console/pixel checks and the Phase B
 screenshot remain unverified. Phase C should also refine police road routing,
 pedestrian corner behavior, and dedicated station/hospital landmarks.
+
+## Phase C
+Eight chained crew jobs begin at the gold safehouse beacon with F. Deliver cars and packages, evade police, race checkpoints, ram attackers and escape a bank vault. Esc opens saves and completed mission replays. Three local save slots retain cash, respect, position and palm coins; mission rewards autosave. Radio stations SOL FM, NEON WAVE and PALMA use local WebAudio synthesis; switch with [ and ] after clicking. The north-up minimap tracks traffic, patrols and objectives. Collect 20 gold rings ($25 each), or follow the green taxi beacon for $150 fares.

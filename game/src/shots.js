@@ -1,6 +1,6 @@
 /** Choose a repeatable showcase scene from the URL, as the starter's shot flow does. */
 export function stageShot(name, { player, cars, menu, camera }) {
-  if (name === 'play' || name === 'chase') {
+  if (name === 'mission' || name === 'combat' || name === 'chase') {
     const car = cars[1];
     car.position.set(3, 0, 0);
     car.rotation.y = 0;
